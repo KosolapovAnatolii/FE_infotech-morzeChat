@@ -1,0 +1,13 @@
+.form {
+  max-width: 1200px;
+  min-height: 42px;
+  display: flex;
+  gap: 8px;
+
+  margin: 0 auto;
+  padding: 26px;
+}
+
+.input {
+  flex-grow: 2;
+}

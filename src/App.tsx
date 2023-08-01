@@ -1,24 +1,54 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useCallback, useEffect, useState } from 'react';
 import './App.css';
+import { MessageForm } from './Components/MessageForm';
+import { MessageList } from './Components/MessageList';
+import { RegisterForm } from './Components/RegisterForm';
+import { CurrentUser } from './Components/CurrentUser';
+import { User } from './Types/Usser';
+import { Message } from './Types/Message';
+import { setupMessageListener, setupUserListener } from './utils/sockets';
 
 function App() {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUsser] = useState('');
+
+  const filterMessagesByUsers = useCallback((messages: Message[]) => (
+    messages.filter(({ from, to }) => (
+      (from === currentUser?.name && to === selectedUser)
+      || (from === selectedUser && to === currentUser?.name)
+    ))
+  ), [currentUser, selectedUser]);
+
+  const filteredMessages = filterMessagesByUsers(messages);
+  
+  useEffect(() => {
+    setupMessageListener(setMessages);
+    setupUserListener(setUsers);
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {currentUser
+        ? <>
+          <CurrentUser currentUser={currentUser}/>
+          <MessageForm 
+            users={users}
+            currentUser={currentUser} 
+            selectedUser={selectedUser}
+            setSelectedUsser={setSelectedUsser}
+          />
+          <MessageList 
+            messages={filteredMessages} 
+            setMessages={setMessages}
+            currentUser={currentUser}
+          />
+        </>
+        : <RegisterForm 
+            setCurrentUser={setCurrentUser}
+          />
+      }
     </div>
   );
 }

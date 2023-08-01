@@ -1,0 +1,16 @@
+.current-user {
+  display: flex;
+  justify-content: flex-start;
+  gap: 8px;
+
+  padding: 16px;
+  max-width: 260px;
+  border: 2px solid #000;
+  margin: 8px;
+  background-color: #efcccc;
+
+  &__name {
+    font-size: 24px;
+    font-weight: bold;
+  }
+}
